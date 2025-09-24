@@ -1,4 +1,5 @@
 import routines
+import time
 bint x = 3
 AtomicInt klaar = 0
 def Task benchmarkRoutine(string name):
@@ -9,9 +10,12 @@ def main():
     int time = 0
     Scheduler scheduler()
     scheduler.run()
+    time_utils::Stopwatch sw()
+    sw.start()
     for int teller in range(0,numR,1):
         scheduler.spawn(benchmarkRoutine, "bench"+to_string(teller))
     while int(klaar) < numR:
         sleep(1)
+    print(sw.elapsed())
     scheduler.stop_scheduler()
     scheduler.join()
