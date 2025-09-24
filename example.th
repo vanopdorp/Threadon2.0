@@ -16,6 +16,6 @@ def main():
         scheduler.spawn(benchmarkRoutine, "bench"+to_string(teller))
     while int(klaar) < numR:
         sleep(1)
-    print(sw.elapsed())
+    print(sw.elapsed(),'sec')
     scheduler.stop_scheduler()
     scheduler.join()
