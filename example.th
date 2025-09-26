@@ -1,5 +1,6 @@
 import routines
 import time
+import colorama
 bint x = 3
 AtomicInt klaar = 0
 def Task benchmarkRoutine(string name):
@@ -16,6 +17,7 @@ def main():
         scheduler.spawn(benchmarkRoutine, "bench"+to_string(teller))
     while int(klaar) < numR:
         sleep(1)
-    print(sw.elapsed(),'sec')
+    color("white","bold")
+    print(sw.elapsed(),"sec")
     scheduler.stop_scheduler()
     scheduler.join()
