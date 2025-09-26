@@ -223,7 +223,9 @@ using namespace std;
                 self.code = f"#include \"{lib_path}/{import_file}/{import_file}.hpp\"\n" + self.code
                 linker_line +=" "+ open(f"{lib_path}/{import_file}/flags.txt").read().replace("\n","")+" "
         if not 'noptimalisation' in self.arg_list:
-            linker_line += "-Ofast"
+            linker_line += "-Ofast "
+        else:
+            linker_line += '-O0 '
         linker_line += f' -o {self.output_file}\n'
         return [self.code,linker_line]
 

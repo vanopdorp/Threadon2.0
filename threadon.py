@@ -4,7 +4,7 @@ from codegenerator import CodeGen
 import subprocess
 import argparse
 
-def compile_threadon_to_cpp(source_code, output_cpp_file):
+def compile_threadon_to_cpp(source_code, output_cpp_file,arg_list):
     # Lexing
     token_lines = lexer(source_code.splitlines())
     # Parsing
@@ -12,7 +12,7 @@ def compile_threadon_to_cpp(source_code, output_cpp_file):
     ast = parser.parse(token_lines)
 
     # Code Generation
-    codegen = CodeGen(output_file=output_cpp_file)
+    codegen = CodeGen(output_file=output_cpp_file,arg_list=arg_list)
     builded = codegen.build(ast)
     cpp_code = builded[0]
     linker_command = builded[1]
@@ -39,12 +39,15 @@ if __name__ == "__main__":
     )
     parser.add_argument('-f', '--filename') # option that takes a value
     parser.add_argument('-o', '--output') # option that takes a value
+    parser.add_argument('-n', '--noptimalisations',help='does not add any optimalisation', action='store_true') 
     args = parser.parse_args()
     with open(args.filename, "r") as f:
         source_code = f.read()
     cpp_file = 'output'
     if args.output:
         cpp_file = args.output
-
-    linker_command = compile_threadon_to_cpp(source_code, cpp_file)
+    arg_list = []
+    if args.noptimalisations:
+        arg_list.append('noptimalisation')
+    linker_command = compile_threadon_to_cpp(source_code, cpp_file,arg_list)
     compile_with_linker_command(linker_command)
