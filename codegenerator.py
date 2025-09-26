@@ -14,9 +14,11 @@ def compile_expr_from_tokens(tokens):
     return result
 
 class CodeGen:
-    def __init__(self):
+    def __init__(self,output_file="output",arg_list=[]):
         self.expr_transformer = ExpressionTransformer()
         self.threads = []
+        self.arg_list = arg_list
+        self.output_file = output_file
         self.main_code = ""
     type_map = {
         "int":"int",
@@ -213,14 +215,16 @@ using namespace std;
             thread_code += f"std::thread t_{thread}({thread});\nt_{thread}.detach();\n"
         thread_code += "}\n"
         self.code = begin_code + global_code + extra_code + thread_code + self.main_code + "\n"
-        linker_line = f'g++ output.cpp {lib_path}/sttlib/sttlib.cpp -Ofast -std=c++20 -I{lib_path}'
+        linker_line = f'g++ output.cpp {lib_path}/sttlib/sttlib.cpp -std=c++20 -I{lib_path}'
         # Voeg een build instructie toe voor g++ met alle .o files
         if import_files:
             print(import_files)
             for import_file in import_files:
                 self.code = f"#include \"{lib_path}/{import_file}/{import_file}.hpp\"\n" + self.code
                 linker_line +=" "+ open(f"{lib_path}/{import_file}/flags.txt").read().replace("\n","")+" "
-        linker_line += ' -o output\n'
+        if not 'noptimalisation' in self.arg_list:
+            linker_line += "-Ofast"
+        linker_line += f' -o {self.output_file}\n'
         return [self.code,linker_line]
 
 def print_classes(classes, indent=0):

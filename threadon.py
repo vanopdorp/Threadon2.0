@@ -2,6 +2,7 @@ from lexer import lexer
 from parser import Parser
 from codegenerator import CodeGen
 import subprocess
+import argparse
 
 def compile_threadon_to_cpp(source_code, output_cpp_file):
     # Lexing
@@ -11,7 +12,7 @@ def compile_threadon_to_cpp(source_code, output_cpp_file):
     ast = parser.parse(token_lines)
 
     # Code Generation
-    codegen = CodeGen()
+    codegen = CodeGen(output_file=output_cpp_file)
     builded = codegen.build(ast)
     cpp_code = builded[0]
     linker_command = builded[1]
@@ -32,11 +33,18 @@ def compile_with_linker_command(linker_command):
         print(f"Compilation failed: {e}")
 
 if __name__ == "__main__":
-    source_file = "example.th"
-    cpp_file = "output.cpp"
-
-    with open(source_file, "r") as f:
+    parser = argparse.ArgumentParser(
+    prog='Threadon',
+    description='Compiles a threadon program',
+    )
+    parser.add_argument('-f', '--filename') # option that takes a value
+    parser.add_argument('-o', '--output') # option that takes a value
+    args = parser.parse_args()
+    with open(args.filename, "r") as f:
         source_code = f.read()
+    cpp_file = 'output'
+    if args.output:
+        cpp_file = args.output
 
     linker_command = compile_threadon_to_cpp(source_code, cpp_file)
     compile_with_linker_command(linker_command)
