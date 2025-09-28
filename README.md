@@ -17,11 +17,22 @@ The language is translated into optimized C++ code, giving developers both **pro
 - 🎭 Class support, function generation, and default arguments.  
 - 🔄 Native coroutine support via `Task` return type.  
 
-## This simple example computes the 40th Fibonacci number using recursion.
-
 ---
 
 ### 📊 Performance Benchmark
+
+#### fib.th
+```
+def int fibonacci_recursive(int n):
+    if n <= 1:
+        return n
+    else:
+        return fibonacci_recursive(n-1) + fibonacci_recursive(n-2)
+def int main():
+    int n = 40  
+    print(fibonacci_recursive(n))
+
+```
 
 Performance measured using the recursive Fibonacci implementation:
 
