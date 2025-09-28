@@ -214,6 +214,9 @@ using namespace std;
         for thread in self.threads:
             thread_code += f"std::thread t_{thread}({thread});\nt_{thread}.detach();\n"
         thread_code += "}\n"
+        if self.main_code == "":
+            DebugError("No main function found in file")
+        
         self.code = begin_code + global_code + extra_code + thread_code + self.main_code + "\n"
         linker_line = f'g++ output.cpp {lib_path}/sttlib/sttlib.cpp -std=c++20 -I{lib_path}'
         # Voeg een build instructie toe voor g++ met alle .o files
