@@ -25,9 +25,9 @@ Threadon doesn’t ask you to choose between productivity and performance — it
 
 Performance measured using the Fibonacci method (recursive).
 
-| Python (NumPy) | C++     | Threadon | Java   |
-|----------------|---------|----------|--------|
-| 15.27 sec      | 0.20 sec| 0.18 sec | 4.86 sec |
+| Python (NumPy) | C++     | Threadon |
+|----------------|---------|----------|
+| 44.56 sec      | 0.85 sec| 0.86 sec |
 
 > ✅ *Threadon is just as fast as C++ in the benchmarks.*
 
