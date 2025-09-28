@@ -601,6 +601,19 @@ class Parser:
                                 DebugError("Error: Cannot add node to body, stack is empty (indentation error or previous parse error)")
                                 continue
                             stack[-1].body.append(node)
+            elif content and content[0]["type"] == "RETURN":
+                node = self.parse_return(content)
+                if node:
+                    if indent_level == 0:
+                        ast.append(node)
+                    else:
+                        while len(stack) > indent_level:
+                            stack.pop()
+                        if not stack:
+                            DebugError("Error: Cannot add node to body, stack is empty (indentation error or previous parse error)")
+                            continue
+                        stack[-1].body.append(node)
+
             elif content and content[1]["type"] == "LPAREN":
                 node = self.parse_function_call(content)
                 if node:

@@ -4,7 +4,7 @@ from codegenerator import CodeGen
 import subprocess
 import argparse
 
-def compile_threadon_to_cpp(source_code, output_cpp_file,arg_list):
+def compile_threadon_to_cpp(source_code,filename, output_cpp_file,arg_list):
     # Lexing
     token_lines = lexer(source_code.splitlines())
     # Parsing
@@ -18,7 +18,7 @@ def compile_threadon_to_cpp(source_code, output_cpp_file,arg_list):
     linker_command = builded[1]
 
     # Write generated C++ code to file
-    with open(output_cpp_file, "w") as f:
+    with open("output.cpp", "w") as f:
         f.write(cpp_code)
     print("COMPILING WITH: ",linker_command)
     print(f"C++ code generated and written to {output_cpp_file}")
@@ -49,5 +49,5 @@ if __name__ == "__main__":
     arg_list = []
     if args.noptimalisations:
         arg_list.append('noptimalisation')
-    linker_command = compile_threadon_to_cpp(source_code, cpp_file,arg_list)
+    linker_command = compile_threadon_to_cpp(source_code,args.filename, cpp_file,arg_list)
     compile_with_linker_command(linker_command)

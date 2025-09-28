@@ -2,6 +2,7 @@
 #include <vector>
 #include <ostream>
 #include <iostream>
+#include <atomic>
 class AtomicString {
 public:
     AtomicString(const std::string & str);
