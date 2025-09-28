@@ -1,52 +1,60 @@
 <img src="./images/Threadon.png">
 
-# 🚀 Threadon: The Fast, Readable Language for Seamless Integration
-Threadon is a high-performance, dynamical typed programming language designed to combine the elegance of modern syntax with the raw power of native integration. Whether you're writing data pipelines, crafting web backends, engineering real-time systems, or building low-level drivers, Threadon gives you the clarity of Python and the control of C++ — without compromise.
+# ⚡️ Threadon Programming Language 🚀
 
-At its core, Threadon champions readability and developer experience, ensuring that even complex applications remain maintainable. With a syntax that feels intuitive and expressive, Threadon helps teams move faster without sacrificing precision.
-
-But Threadon's true strength lies in its interoperability. Built with seamless FFI and robust bridging tools, it integrates smoothly with ecosystems like Python, C++ and more. This makes it ideal for polyglot projects and gradual migrations, letting you leverage existing libraries while writing new code in a cleaner, safer environment.
-
-Core Features
-- ⚡ Dynamical typed
-
-- 📚 Readable syntax inspired by modern scripting languages
-- 🧰 Extensive standard library inspired by Python.
-
-- 🔗 Effortless interop with Python, C++, and other native platforms
-
-- 🧵 Concurrent primitives designed for high-performance and scalability
-
-
-Threadon doesn’t ask you to choose between productivity and performance — it delivers both. From scripting tasks to system-level engineering, it adapts to your needs without bloating your codebase. If you’ve ever wanted the flexibility of Python with the execution power of C++, Threadon is the language that brings those worlds together.
-**A simple and fast programming language compatible with C++ and C**
-
-## 🚀 Benchmarks
-
-Performance measured using the Fibonacci method (recursive).
-
-| Python (NumPy) | C++     | Threadon |
-|----------------|---------|----------|
-| 44.56 sec      | 0.85 sec| 0.86 sec |
-
-> ✅ *Threadon is just as fast as C++ in the benchmarks.*
+Threadon is an experimental programming language designed to combine the **simplicity of Python 🐍** with the **raw performance of C++ 💨**.  
+It targets modern multi-threaded applications and leverages C++20 features under the hood.  
+The language is translated into optimized C++ code, giving developers both **productivity** and **execution speed**.  
 
 ---
 
-## ⚡ Quickstart
-### 🐧 Linux
-Install g++ and python
-```
-sudo apt-get install g++ python3 build-essential
-```
-Download the latest Threadon.deb of the git repository and then
-```
-sudo dpkg -i threadon.deb
-```
-compile
-```
-threadon -c test.th
-```
-run
-```
-./test
+### ✨ Features
+- 📝 Python-like syntax for rapid prototyping and readability.  
+- ⚡ Direct transpilation to C++20, ensuring high performance.  
+- 🔀 Built-in concurrency model with simplified thread management.  
+- 🛠️ Strong type mapping (`int`, `float`, `string`, `bool`, `BigInt`, `Task`, `Atomic` types).  
+- 🔗 Seamless interoperability with standard C++ libraries.  
+- 🎭 Class support, function generation, and default arguments.  
+- 🔄 Native coroutine support via `Task` return type.  
+
+## This simple example computes the 40th Fibonacci number using recursion.
+
+---
+
+### 📊 Performance Benchmark
+
+Performance measured using the recursive Fibonacci implementation:
+
+| 🔗 Language / Framework | ⚡ Execution Time |
+|--------------------------|------------------|
+| 🐍 Python (NumPy)        | 🕒 44.56 sec      |
+| 💨 C++                   | ⏱️ 0.85 sec       |
+| 🚀 Threadon              | ⏱️ 0.86 sec       |
+
+🎉 *Threadon reaches near-native C++ speeds while keeping the code simple and clean!*
+
+---
+
+### 🏗️ Compilation Process
+1. 🧩 Source code is parsed into an AST.  
+2. 🔧 AST is transformed into equivalent C++20 code.  
+3. ⚙️ Generated C++ is compiled with `g++ -std=c++20 -Ofast`.  
+4. 🔀 Threaded functions are automatically launched in detached `std::thread` objects.  
+
+---
+
+### ❓ Why Threadon?
+- 🐍 Python is beginner-friendly but slow for compute-heavy tasks.  
+- 💨 C++ is extremely fast but complex to write and maintain.  
+- 🚀 Threadon is the **best of both worlds**: easy syntax, native performance, and built-in concurrency.  
+
+---
+
+### 🛣️ Roadmap
+- ⏳ Extend support for async/await style coroutines.  
+- 🛡️ Add memory safety analysis.  
+- 📈 Optimize collection types further.  
+- 📦 Add a package management system for third-party modules.  
+- 🐞 Provide enhanced debugging and error messages.  
+
+---
