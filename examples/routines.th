@@ -1,0 +1,23 @@
+import routines
+import time
+import colorama
+bint x = 3
+AtomicInt klaar = 0
+def Task benchmarkRoutine(string name):
+    klaar += AtomicInt(1)
+def main(): 
+    thread_starter()
+    int numR = 500000
+    int time = 0
+    Scheduler scheduler()
+    scheduler.run()
+    time_utils::Stopwatch sw()
+    sw.start()
+    for int teller in range(0,numR,1):
+        scheduler.spawn(benchmarkRoutine, "bench"+to_string(teller))
+    while int(klaar) < numR:
+        sleep(1)
+    color("white","bold")
+    print(sw.elapsed(),"sec")
+    scheduler.stop_scheduler()
+    scheduler.join()

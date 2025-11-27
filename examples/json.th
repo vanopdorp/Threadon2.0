@@ -1,0 +1,24 @@
+import json
+def main():
+    json o = json::make_object()
+    o.as_object().set("name", "Ada")
+    o.as_object().set("active", True)
+    o.as_object().set("score", 99.5)
+    o.as_object().set("big", BigInt{9223372036854775807})
+
+    json a = json::make_array()
+    a.as_array().push_back(1)
+    a.as_array().push_back(2);
+    a.as_array().push_back("three")
+
+    o.as_object().set("list", a)
+
+    print(o["name"].as_string())
+    print(o["list"][2].as_string())
+
+    json::json::dump_options opts
+    opts.indent = 2
+    print(o.dump(opts))
+
+    auto p = json::parse(R"({"x":[1,2,3],"y":"\u20AC"})")
+    print(p["y"].as_string())

@@ -477,8 +477,8 @@ class Parser:
                 # Sta True en False altijd toe als geldige identifiers
                 if node.name in ("True", "False"):
                     return
-                if node.name not in visible_vars and node.name not in known_funcs:
-                    errors.append(f"Error: Unknown variable or function '{node.name}' in expression")
+                #if node.name not in visible_vars and node.name not in known_funcs:
+                #    errors.append(f"Error: Unknown variable or function '{node.name}' in expression")
             elif isinstance(node, nodes.FunctionCallNode):
                 for arg in node.arguments:
                     check_expr_vars(arg, local_vars, known_funcs)

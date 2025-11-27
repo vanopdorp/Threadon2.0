@@ -3,7 +3,8 @@ from parser import Parser
 from codegenerator import CodeGen
 import subprocess
 import argparse
-
+from os import listdir
+print(__file__)
 def compile_threadon_to_cpp(source_code,filename, output_cpp_file,arg_list):
     # Lexing
     token_lines = lexer(source_code.splitlines())
@@ -18,7 +19,7 @@ def compile_threadon_to_cpp(source_code,filename, output_cpp_file,arg_list):
     linker_command = builded[1]
 
     # Write generated C++ code to file
-    with open("output.cpp", "w") as f:
+    with open("build/output.cpp", "w") as f:
         f.write(cpp_code)
     print("COMPILING WITH: ",linker_command)
     print(f"C++ code generated and written to {output_cpp_file}")

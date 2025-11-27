@@ -3,6 +3,7 @@ import nodes
 from parser import ExpressionTransformer
 from debugger import DebugError
 from os import listdir
+import os
 def compile_expr_from_tokens(tokens):
     result = ""
     last_type = None
@@ -104,7 +105,7 @@ class CodeGen:
             return to_return
     def compile_var_decl(self,node):
         rhs = self.compile_expr(node.value)
-        return f"{self.type_map[node.var_type]} {node.identifier} = {rhs};"
+        return f"{node.var_type} {node.identifier} = {rhs};"
     def compile_class(self,node):
         to_return = f"class {node.name}"
         if len(node.bases) > 0:
@@ -185,52 +186,132 @@ class CodeGen:
         return "// [Unknown node]\n"
 
     def build(self, nodes):
-        lib_path = "lib"
+        import os
+
+        lib_path = os.path.dirname(__file__) + "/lib"
+
         # Verzamel import nodes
-        import_files = [n["filename"] for n in nodes if isinstance(n, dict) and n.get("type") == "IMPORT"]
+        import_files = [
+            n["filename"]
+            for n in nodes
+            if isinstance(n, dict) and n.get("type") == "IMPORT"
+        ]
+
         begin_code = f"""
-#include "{lib_path}/sttlib/sttlib.hpp"
-using namespace std;
-"""
-        # Verzamel globale variabelen (alleen VARIABLE_DECLARATION nodes op toplevel)
+    #include "{lib_path}/sttlib/sttlib.hpp"
+    using namespace std;
+    """
+
+        # Verzamel globale variabelen
         global_vars = []
         other_nodes = []
         for node in nodes:
-            if hasattr(node, 'type') and node.type == "VARIABLE_DECLARATION":
+            if hasattr(node, "type") and node.type == "VARIABLE_DECLARATION":
                 global_vars.append(self.compile_var_decl(node))
             else:
                 other_nodes.append(node)
+
         global_code = "\n".join(global_vars) + ("\n" if global_vars else "")
-        # Genereer de rest van de code (functies, threads, etc)
+
+        # Genereer de rest van de code
         extra_code = ""
         for node in other_nodes:
-            # Sla dicts (zoals import nodes) over
             if isinstance(node, dict):
                 continue
             bd = self.build_one(node)
-            if bd != None:
+            if bd is not None:
                 extra_code += bd
+
+        # Threads
         thread_code = "void thread_starter() {\n"
         for thread in self.threads:
-            thread_code += f"std::thread t_{thread}({thread});\nt_{thread}.detach();\n"
+            thread_code += f"std::thread t_{thread}({thread});\n"
+            thread_code += f"t_{thread}.detach();\n"
         thread_code += "}\n"
+
         if self.main_code == "":
             DebugError("No main function found in file")
-        
-        self.code = begin_code + global_code + extra_code + thread_code + self.main_code + "\n"
-        linker_line = f'g++ output.cpp {lib_path}/sttlib/sttlib.cpp -std=c++20 -I{lib_path}'
-        # Voeg een build instructie toe voor g++ met alle .o files
-        if import_files:
-            print(import_files)
+
+        # Combineer alle code
+        self.code = (
+            begin_code
+            + global_code
+            + extra_code
+            + thread_code
+            + self.main_code
+            + "\n"
+        )
+
+        # Voeg includes toe voor alle imports bovenaan de code
+        for import_file in import_files:
+            self.code = (
+                f"#include \"{lib_path}/{import_file}/{import_file}.hpp\"\n"
+                + self.code
+            )
+
+        # --- Ninja build file genereren ---
+        ninja_file = "build/build.ninja"
+        os.makedirs("build", exist_ok=True)
+
+        with open(ninja_file, "w") as f:
+            optimisation = "-Ofast" if "noptimalisation" not in self.arg_list else "-O0"
+
+            # Verzamel include paden
+            include_flags = [f"-I{lib_path}"] + [f"-I{lib_path}/{imp}" for imp in import_files]
+
+            # Verzamel flags per import
+            import_objs = []
+            import_compile_flags = {}
+            import_link_flags = []
             for import_file in import_files:
-                self.code = f"#include \"{lib_path}/{import_file}/{import_file}.hpp\"\n" + self.code
-                linker_line +=" "+ open(f"{lib_path}/{import_file}/flags.txt").read().replace("\n","")+" "
-        if not 'noptimalisation' in self.arg_list:
-            linker_line += "-Ofast "
-        else:
-            linker_line += '-O0 '
-        linker_line += f' -o {self.output_file}\n'
-        return [self.code,linker_line]
+                flags_path = f"{lib_path}/{import_file}/flags.txt"
+                if os.path.exists(flags_path):
+                    flags = open(flags_path).read().strip()
+                    import_compile_flags[import_file] = flags
+                    import_link_flags.append(flags)
+
+            global_cxxflags = f"-std=c++20 {optimisation} " + " ".join(include_flags)
+            global_ldflags = f"{optimisation} " + " ".join(import_link_flags)
+
+            # Rules
+            f.write("rule cxx\n")
+            f.write("  command = g++ $cxxflags $in -c -o $out\n")
+            f.write("  description = Compiling $in\n\n")
+
+            f.write("rule link\n")
+            f.write("  command = g++ $in $ldflags -o $out\n")
+            f.write("  description = Linking $out\n\n")
+
+            # Hoofdbron
+            f.write("build build/output.o: cxx build/output.cpp\n")
+            f.write(f"  cxxflags = {global_cxxflags}\n\n")
+
+            # sttlib
+            f.write(f"build {lib_path}/sttlib/sttlib.o: cxx {lib_path}/sttlib/sttlib.cpp\n")
+            f.write(f"  cxxflags = {global_cxxflags}\n\n")
+
+            # imports
+            for import_file in import_files:
+                obj = f"{lib_path}/{import_file}/{import_file}.o"
+                src = f"{lib_path}/{import_file}/{import_file}.cpp"
+                extra_flags = import_compile_flags.get(import_file, "")
+
+                if os.path.exists(src):
+                    # compileer de .cpp naar .o
+                    f.write(f"build {obj}: cxx {src}\n")
+                    f.write(f"  cxxflags = {global_cxxflags} {extra_flags}\n\n")
+                    import_objs.append(obj)
+                else:
+                    # geen .cpp, dus alleen header includen
+                    print(f"Info: {src} ontbreekt, alleen {import_file}.hpp wordt gebruikt.")
+
+            # link
+            objs = [f"build/output.o", f"{lib_path}/sttlib/sttlib.o"] + import_objs
+            f.write(f"build {self.output_file}: link {' '.join(objs)}\n")
+            f.write(f"  ldflags = {global_ldflags}\n")
+
+        return [self.code, "ninja -f build/build.ninja\n"]
+
 
 def print_classes(classes, indent=0):
     for cls in classes:

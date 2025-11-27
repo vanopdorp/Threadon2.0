@@ -1,0 +1,5 @@
+def main():
+    int x = 1
+    string y = "hello"
+    float z = 3.14159265
+    print(x,y,z)
