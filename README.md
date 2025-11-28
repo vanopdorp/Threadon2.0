@@ -59,4 +59,12 @@ Performance measured using the recursive Fibonacci implementation:
 - 💨 C++ is extremely fast but complex to write and maintain.  
 - 🚀 The snake in the logo is based on the python logo yellow is readable en blue is performance threadon is a combination of it
 ---
+### How to Start?
+```bash
+git clone https://github.com/vanopdorp/Threadon2.0.git/ --branch 0.4
+cd Threadon2.0
+pyinstaller threadon.spec
+./dist/threadon/threadon -c examples/helloworld.th
+./output
+```
 
