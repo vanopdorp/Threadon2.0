@@ -35,14 +35,14 @@ class Debugger:
             elif ntype == "VARIABLE_DECLARATION":
                 # Alleen als deze variabele nog niet in de huidige scope_vars zit (dus niet in global_vars)
                 if node.identifier in scope_vars:
-                    errors.append(f"Dubbele variabele declaratie: {node.identifier}")
+                    errors.append(f"Double variable declaration: {node.identifier}")
                 # Voeg alleen toe aan scope_vars, niet aan visible_vars (global_vars is al meegenomen)
                 scope_vars.add(node.identifier)
                 if node.value is None or node.value == "":
-                    warnings.append(f"Variabele '{node.identifier}' heeft geen waarde")
+                    warnings.append(f"Var: '{node.identifier}' has no value")
             elif ntype == "IDENTIFIER":
                 if node.name not in visible_vars:
-                    errors.append(f"Onbekende variabele: {node.name}")
+                    errors.append(f"Not declared variable: {node.name}")
                 used_variables.add(node.name)
             elif ntype == "FUNCTION_CALL":
                 used_functions.add(node.name)
@@ -84,17 +84,17 @@ class Debugger:
         for lineno, line in enumerate(tokens, 1):
             for token in line:
                 if token["type"] == "SYNTAX_ERROR":
-                    errors.append(f"Syntax error op regel {lineno}: '{token['value']}'")
+                    errors.append(f"Syntax error on line {lineno}: '{token['value']}'")
                     lines_with_errors.add(lineno)
 
         # Warnings voor niet-gebruikte variabelen/functies
         unused_vars = variable_names - used_variables
         unused_funcs = function_names - used_functions
         for v in unused_vars:
-            warnings.append(f"Niet-gebruikte variabele: {v}")
+            warnings.append(f"Not used variable: {v}")
         for f in unused_funcs:
             if f != "main":
-                warnings.append(f"Niet-gebruikte functie: {f}")
+                warnings.append(f"Not used function: {f}")
 
         # Print alles overzichtelijk
         output = []
@@ -119,3 +119,21 @@ class Debugger:
 def DebugError(message):
     print(f"\033[31m{message}\033[39m")
     sys.exit(1)
+class FaultDecoder:
+    def debug(stdout: str):
+        errors = {}
+        for line in stdout.splitlines():
+            if "error:" in line:
+                # Extract the error class after "error:"
+                parts = line.split("error:")
+                location = parts[0].strip()
+                message = parts[1].strip()
+
+                # Use the message itself as the "error class"
+                errors.setdefault(message, []).append(location)
+        
+        # Print grouped errors
+        for err_class, locations in errors.items():
+            if "was not declared in this scope":
+                print(f"Error on line {''.join(location.split(':')[1])}:\n  ",end="")
+                print(err_class)

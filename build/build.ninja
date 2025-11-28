@@ -1,0 +1,16 @@
+rule cxx
+  command = g++ $cxxflags $in -c -o $out
+  description = Compiling $in
+
+rule link
+  command = g++ $in $ldflags -o $out
+  description = Linking $out
+
+build build/output.o: cxx build/output.cpp
+  cxxflags = -std=c++20 -Ofast -I/home/joep/threadon/v2/source_code/lib
+
+build /home/joep/threadon/v2/source_code/lib/sttlib/sttlib.o: cxx /home/joep/threadon/v2/source_code/lib/sttlib/sttlib.cpp
+  cxxflags = -std=c++20 -Ofast -I/home/joep/threadon/v2/source_code/lib
+
+build output: link build/output.o /home/joep/threadon/v2/source_code/lib/sttlib/sttlib.o
+  ldflags = -Ofast 

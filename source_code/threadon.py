@@ -4,6 +4,7 @@ from codegenerator import CodeGen
 import subprocess
 import argparse
 from os import listdir
+from debugger import FaultDecoder
 print(__file__)
 def compile_threadon_to_cpp(source_code,filename, output_cpp_file,arg_list):
     # Lexing
@@ -27,22 +28,25 @@ def compile_threadon_to_cpp(source_code,filename, output_cpp_file,arg_list):
 
 def compile_with_linker_command(linker_command):
     try:
-        compile_command = linker_command.split()
-        subprocess.run(compile_command, check=True)
-        print("Executable compiled successfully using linker_command.")
+        result = subprocess.run(
+            linker_command.split(),
+            check=True,
+            capture_output=True,
+            text=True
+        )
     except subprocess.CalledProcessError as e:
-        print(f"Compilation failed: {e}")
 
+        FaultDecoder.debug(e.stdout)
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
     prog='Threadon',
     description='Compiles a threadon program',
     )
-    parser.add_argument('-f', '--filename') # option that takes a value
+    parser.add_argument('-c', '--compile') # option that takes a value
     parser.add_argument('-o', '--output') # option that takes a value
     parser.add_argument('-n', '--noptimalisations',help='does not add any optimalisation', action='store_true') 
     args = parser.parse_args()
-    with open(args.filename, "r") as f:
+    with open(args.compile, "r") as f:
         source_code = f.read()
     cpp_file = 'output'
     if args.output:
@@ -50,5 +54,5 @@ if __name__ == "__main__":
     arg_list = []
     if args.noptimalisations:
         arg_list.append('noptimalisation')
-    linker_command = compile_threadon_to_cpp(source_code,args.filename, cpp_file,arg_list)
+    linker_command = compile_threadon_to_cpp(source_code,args.compile, cpp_file,arg_list)
     compile_with_linker_command(linker_command)
