@@ -2,7 +2,7 @@
 
 # ⚡️ Threadon Programming Language 🚀
 
-Threadon is an experimental programming language designed to combine the **simplicity of Python 🐍** with the **raw performance of C++ 💨**.  
+Threadon is an programming language designed to combine the **simplicity of Python 🐍** with the **raw performance of C++ 💨**.  
 It targets modern multi-threaded applications and leverages C++20 features under the hood.  
 The language is translated into optimized C++ code, giving developers both **productivity** and **execution speed**.  
 
@@ -57,6 +57,6 @@ Performance measured using the recursive Fibonacci implementation:
 ### ❓ Why Threadon?
 - 🐍 Python is beginner-friendly but slow for compute-heavy tasks.  
 - 💨 C++ is extremely fast but complex to write and maintain.  
-- 🚀 Threadon is the **best of both worlds**: easy syntax, native performance, and built-in concurrency.  
-
+- 🚀 The snake in the logo is based on the python logo yellow is readable en blue is performance threadon is a combination of it
 ---
+
